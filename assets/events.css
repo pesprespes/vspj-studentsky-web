@@ -12,11 +12,18 @@
 .calendar-day.has-events { background: var(--accent-soft); color: var(--red-dark); font-weight: 750; }
 .calendar-day.has-events::after { content: ''; position: absolute; width: 4px; height: 4px; border-radius: 50%; bottom: 4px; background: currentColor; }
 .calendar-day[aria-current="date"] { border-color: var(--red); }
+.calendar-day.is-holiday { background: #fff0f0; color: var(--red-dark); border: 1px dashed var(--red-dark); font-weight: 750; }
 .calendar-day.is-selected { background: var(--red); color: #fff; }
 .calendar-day:focus-visible, .calendar-control:focus-visible, .calendar-today:focus-visible, .calendar-event:focus-visible { outline: 2px solid var(--red-dark); outline-offset: 2px; }
 .calendar-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 12px 0; }
 .calendar-legend { font-size: 11px; color: var(--muted); }
 .calendar-legend::before { content: ''; display: inline-block; width: 6px; height: 6px; background: var(--red); border-radius: 50%; margin-right: 6px; }
+.calendar-legends { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.calendar-legend.holiday-legend::before { width: 8px; height: 8px; border: 1px dashed var(--red-dark); border-radius: 2px; background: #fff0f0; }
+.calendar-schedule { text-decoration: underline; text-underline-offset: 2px; }
+.calendar-holiday { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 13px; margin-top: 8px; border: 1px dashed var(--red-dark); border-radius: 11px; background: #fff0f0; overflow-wrap: anywhere; }
+.calendar-holiday strong { font-size: 16px; line-height: 1.4; }
+.holiday-badge { font-size: 11px; font-weight: 650; color: var(--red-dark); }
 .calendar-today { font-size: 11px; padding: 6px 10px; }
 .calendar-count { margin: 0 0 16px; }
 .calendar-selection { border-top: 1px solid var(--line); padding-top: 15px; }
@@ -55,3 +62,4 @@
   .event-registration .button { display: block; }
 }
 @media (prefers-reduced-motion: reduce) { .calendar-box * { transition: none; } }
+

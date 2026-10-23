@@ -32,6 +32,7 @@ Neoficiální studentský rozcestník, nikoli oficiální web VŠPJ.
 
 - `assets/events.js`: společný seznam akcí pro kalendář i detail.
 - `assets/calendar.js`: měsíce, dny, náhledy a navigace.
+- `assets/holidays.js`: české státní a ostatní svátky; pevná data a výpočet Velikonoc pro zobrazený rok podle současných pravidel.
 - `akce.html?id=hospodsky-kviz-2026`: samostatná stránka akce.
 - `assets/event-detail.js`: načtení informací a registrace podle ID.
 - `assets/events.css`: vzhled kalendáře a detailu.
@@ -39,4 +40,10 @@ Neoficiální studentský rozcestník, nikoli oficiální web VŠPJ.
 Novou akci přidejte do seznamu `window.VSPJ_EVENTS`: unikátní `id`, datum `YYYY-MM-DD`, název, typ, shrnutí a odstavce popisu. `time` a `place` ponechte `null`, pokud nejsou potvrzené. `registration` má hodnotu `required` (nutná), `optional` (dobrovolná) nebo `none` (bez registrace). `registrationUrl` obsahuje adresu formuláře, případně `null`, pokud zatím není k dispozici.
 
 Den s jednou akcí otevírá detail přímo. Při více akcích ve stejný den se pod kalendářem zobrazí seznam detailů. Náhled se mění najetím myši i zaměřením klávesnicí. Na mobilu lze klepnout na označený den nebo na kartu akce. Kalendář zobrazuje pouze vložené akce; nenačítá školní program automaticky.
+
+Svátky mají přerušovaný rámeček a popisek „Den pracovního klidu“. Akce označuje tečka; obě označení se mohou zobrazit současně. Den se svátkem zobrazí náhled včetně případných akcí, na jejichž detail vedou jednotlivé karty. Svátky se nezapočítávají do počtu akcí a nemají registrační formulář. Velký pátek a Velikonoční pondělí se dopočítávají pro každý rok. Svátky o víkendu se neposouvají na pondělí. Další školní volno se řídí harmonogramem VŠPJ.
+
+Seznam ověřen 23. 10. 2026 podle MZV ČR: https://mzv.gov.cz/london/cz/konzularni_a_vizove_informace/statni_svatky_1/index.html
+Při změně českých svátků je nutné aktualizovat `assets/holidays.js`; minulá léta nejsou historickým přehledem tehdejší legislativy.
+
 
