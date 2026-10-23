@@ -7,6 +7,7 @@
   const today = utils.today();
   let year = Number(today.slice(0, 4));
   let month = Number(today.slice(5, 7)) - 1;
+  let holidays = [];
   const grid = root.querySelector('[data-days]');
   const title = root.querySelector('[data-month]');
   const panel = root.querySelector('[data-day-events]');
@@ -14,6 +15,7 @@
   const count = root.querySelector('[data-month-count]');
   const key = day => `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
   const onDay = date => events.filter(event => event.date === date);
+  const holidayOnDay = date => holidays.find(holiday => holiday.date === date);
   const node = (tag, className, text) => {
     const el = document.createElement(tag);
     if (className) el.className = className;
@@ -28,7 +30,15 @@
     });
     panel.replaceChildren();
     const dayEvents = onDay(date);
-    if (!dayEvents.length) {
+    const holiday = holidayOnDay(date);
+    if (holiday) {
+      const card = node('div', 'calendar-holiday');
+      card.append(node('span', 'event-type', 'Svátek v ČR'));
+      card.append(node('strong', '', holiday.title));
+      card.append(node('span', 'holiday-badge', 'Den pracovního klidu'));
+      panel.append(card);
+    }
+    if (!dayEvents.length && !holiday) {
       panel.append(node('p', 'calendar-empty', 'Na tento den zatím není zveřejněna žádná akce.'));
       return;
     }
@@ -44,12 +54,14 @@
   }
 
   function render() {
+    holidays = window.VSPJ_HOLIDAYS.forYear(year);
     title.textContent = new Intl.DateTimeFormat('cs-CZ', {
       month: 'long', year: 'numeric', timeZone: 'UTC'
     }).format(new Date(Date.UTC(year, month, 1)));
     const prefix = `${year}-${String(month + 1).padStart(2, '0')}`;
     const monthEvents = events.filter(event => event.date.startsWith(prefix)).sort((a, b) => a.date.localeCompare(b.date));
-    count.textContent = monthEvents.length ? `Počet akcí v měsíci: ${monthEvents.length}` : 'V tomto měsíci zatím nejsou zveřejněné akce.';
+    const monthHolidays = holidays.filter(holiday => holiday.date.startsWith(prefix));
+    count.textContent = `Akce: ${monthEvents.length} · Svátky: ${monthHolidays.length}`;
     grid.replaceChildren();
     const offset = (new Date(Date.UTC(year, month, 1)).getUTCDay() + 6) % 7;
     const days = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
@@ -61,20 +73,27 @@
     for (let day = 1; day <= days; day++) {
       const date = key(day);
       const dayEvents = onDay(date);
-      const el = node(dayEvents.length === 1 ? 'a' : 'button', 'calendar-day', String(day));
-      if (dayEvents.length === 1) el.href = utils.url(dayEvents[0]);
+      const holiday = holidayOnDay(date);
+      const directLink = dayEvents.length === 1 && !holiday;
+      const el = node(directLink ? 'a' : 'button', 'calendar-day', String(day));
+      if (directLink) el.href = utils.url(dayEvents[0]);
       else el.type = 'button';
       el.dataset.date = date;
       el.classList.toggle('has-events', dayEvents.length > 0);
+      el.classList.toggle('is-holiday', Boolean(holiday));
       if (date === today) el.setAttribute('aria-current', 'date');
-      const names = dayEvents.map(event => event.title + ', ' + utils.registrationLabel(event)).join('; ');
+      const names = [
+        ...(holiday ? [holiday.title + ', svátek, den pracovního klidu'] : []),
+        ...dayEvents.map(event => event.title + ', ' + utils.registrationLabel(event))
+      ].join('; ');
       el.setAttribute('aria-label', utils.formatDate(date) + '. ' + (names || 'Žádná zveřejněná akce'));
       el.addEventListener('mouseenter', () => showDay(date));
       el.addEventListener('focus', () => showDay(date));
-      if (dayEvents.length !== 1) el.addEventListener('click', () => showDay(date));
+      if (!directLink) el.addEventListener('click', () => showDay(date));
       grid.append(el);
     }
-    const initial = monthEvents.find(event => event.date >= today) || monthEvents[0];
+    const monthItems = [...monthEvents, ...monthHolidays].sort((a, b) => a.date.localeCompare(b.date));
+    const initial = monthItems.find(item => item.date >= today) || monthItems[0];
     showDay(initial ? initial.date : today.startsWith(prefix) ? today : key(1));
   }
 
@@ -107,3 +126,4 @@
   root.querySelector('[data-calendar-fallback]').hidden = true;
   render();
 })();
+
